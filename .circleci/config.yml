@@ -89,11 +89,16 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
-      #- test:
-      #    requires:
-      #      - build
-      - docker-build:
-          context: docker-hub-credentials
-          requires:
-            - build
+    - build
+    #- test:
+    #    requires:
+    #      - build
+    - docker-build:
+        context: docker-hub-credentials
+        requires:
+        - build
+        filters:
+          branches:
+            only:
+            - master
+            - development
