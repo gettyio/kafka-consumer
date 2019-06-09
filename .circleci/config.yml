@@ -1,0 +1,98 @@
+---
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10
+
+    working_directory: /tmp/repo
+
+    steps:
+      - checkout
+
+      # tries to restore dependencies folder from cache
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+      
+      # downloads dependencies
+      - run: |
+          yarn
+          yarn global add typescript
+
+      # tries to save dependencies into cache
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      
+      # builds distribuion folder
+      - run: yarn build
+
+      # tries to save distribution folder to cache
+      - save_cache:
+          paths:
+            - build
+          key: v1-dist-{{ checksum "package.json" }}
+
+  test:
+    docker:
+      - image: circleci/node:10
+
+    working_directory: /tmp/repo
+
+    steps:
+      - checkout
+
+      # tries to restore dependencies folder from cache
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+
+      - run: |
+          yarn test
+
+  docker-build:
+    docker:
+      - image: docker:stable
+
+    working_directory: /tmp/repo
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # tries to restore dependencies folder from cache
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+
+      # tries to restore distribution folder from cache
+      - restore_cache:
+          keys:
+            - v1-dist-{{ checksum "package.json" }}
+
+      # build and push docker image
+      - run: |
+          docker login -u $DOCKER_LOGIN -p $DOCKER_PWD
+          docker build . --tag gettyio/kafka-consumer:$CIRCLE_SHA1
+          docker push gettyio/kafka-consumer:$CIRCLE_SHA1
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            docker tag gettyio/kafka-consumer:$CIRCLE_SHA1 gettyio/kafka-consumer:latest
+            docker push gettyio/kafka-consumer:latest
+          else
+            docker tag gettyio/kafka-consumer:$CIRCLE_SHA1 gettyio/kafka-consumer:$CIRCLE_BRANCH
+            docker push gettyio/kafka-consumer:$CIRCLE_BRANCH
+          fi
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build
+      #- test:
+      #    requires:
+      #      - build
+      - docker-build:
+          requires:
+            - build

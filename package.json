@@ -1,0 +1,29 @@
+{
+  "name": "kafka-consumer",
+  "version": "0.0.1-a",
+  "description": "An example of implementation of kafka topics consuming in NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "yarn test",
+    "start": "node build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gettyio/kafka-consumer.git"
+  },
+  "keywords": [
+    "kafka",
+    "nodejs",
+    "stream"
+  ],
+  "author": "Vinicius Niche Correa vinicius@getty.io",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gettyio/kafka-consumer/issues"
+  },
+  "homepage": "https://github.com/gettyio/kafka-consumer#readme",
+  "dependencies": {
+    "@types/node": "^12.0.7",
+    "kafka-node": "^4.1.3"
+  }
+}
