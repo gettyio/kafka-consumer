@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "yarn test",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "build": "tsc --build"
   },
   "repository": {
     "type": "git",
