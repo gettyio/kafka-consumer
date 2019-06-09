@@ -25,9 +25,10 @@ const consumerGroup = new ConsumerGroupStream(consumerOptions, KAFKA_TOPIC);
 const messageTransform = new Transform({
   objectMode: true,
   decodeStrings: true,
-  transform(message) {
+  transform(message, encoding, done) {
     console.log(`Received message ${message.value} transforming input`);
+    return done();
   }
 });
 
-consumerGroup.pipe(messageTransform);
+consumerGroup.pipe(messageTransform).on('error', (error) => { console.error(error) });
