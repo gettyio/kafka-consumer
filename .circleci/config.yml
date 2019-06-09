@@ -13,7 +13,7 @@ jobs:
       # tries to restore dependencies folder from cache
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-{{ .Revision }}-{{ .Branch }}
       
       # downloads dependencies
       - run: |
@@ -24,7 +24,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ .Revision }}-{{ .Branch }}
       
       # builds distribuion folder
       - run: yarn build
@@ -33,7 +33,7 @@ jobs:
       - save_cache:
           paths:
             - build
-          key: v1-dist-{{ checksum "package.json" }}
+          key: v1-dist-{{ .Revision }}-{{ .Branch }}
 
   test:
     docker:
@@ -47,7 +47,7 @@ jobs:
       # tries to restore dependencies folder from cache
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-{{ .Revision }}-{{ .Branch }}
 
       - run: |
           yarn test
@@ -65,12 +65,12 @@ jobs:
       # tries to restore dependencies folder from cache
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-{{ .Revision }}-{{ .Branch }}
 
       # tries to restore distribution folder from cache
       - restore_cache:
           keys:
-            - v1-dist-{{ checksum "package.json" }}
+            - v1-dist-{{ .Revision }}-{{ .Branch }}
 
       # build and push docker image
       - run: |
