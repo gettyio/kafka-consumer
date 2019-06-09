@@ -94,5 +94,6 @@ workflows:
       #    requires:
       #      - build
       - docker-build:
+          context: docker-hub-credentials
           requires:
             - build
