@@ -1,10 +1,16 @@
 import { Transform } from 'stream';
 import { ConsumerGroupStream, ConsumerGroupStreamOptions } from 'kafka-node';
 
+enum FromOffset {
+  EARLIEST = 'earliest',
+  LATEST = 'latest'
+};
+
 const {
   KAFKA_HOST,
   CONSUMER_GROUP_ID,
-  KAFKA_TOPIC
+  KAFKA_TOPIC,
+  FROM_OFFSET
 } = process.env;
 
 const consumerOptions: ConsumerGroupStreamOptions = {
@@ -12,7 +18,7 @@ const consumerOptions: ConsumerGroupStreamOptions = {
   groupId: CONSUMER_GROUP_ID,
   autoCommit: false,
   protocol: ['roundrobin'],
-  fromOffset: 'latest',
+  fromOffset: FROM_OFFSET as FromOffset,
   autoCommitIntervalMs: 1000,
   fetchMaxBytes: 1024 * 1024,
   fetchMaxWaitMs: 100,
